@@ -4,7 +4,7 @@ use LWP::Simple;
 my $logger = Fluent::Logger->new(
     host => '127.0.0.1',
     port => 24224,
-    tag_prefix => 'td.test_db',
+    tag_prefix => 'td.weather_db',
 );
  
 $debug = 3;
@@ -25,9 +25,12 @@ my $jp_temp = current_temp($jp);
 
 # Prepare and send the weather data
 
-my $temp_json = "{\"KPWK\":\"$il_temp\",\"KNUQ\":\"$ca_temp\",\"RJAA\":\"$jp_temp\"\}";
-print "$time : $temp_json\n" if ($debug);
-$logger->post("temperature_table", { "time" => "$time", "v" => $temp_json });
+#my $temp_json = "{\"KPWK\":\"$il_temp\",\"KNUQ\":\"$ca_temp\",\"RJAA\":\"$jp_temp\"\}";
+#print "$time : $temp_json\n" if ($debug);
+#$logger->post("temperature_table", { "time" => "$time", "v" => $temp_json });
+$logger->post("temperature_table", { "station" => "KPWK", "temperature" => $il_temp });
+$logger->post("temperature_table", { "station" => "KNUQ", "temperature" => $ca_temp });
+$logger->post("temperature_table", { "station" => "RJAA", "temperature" => $jp_temp });
 
 
 
