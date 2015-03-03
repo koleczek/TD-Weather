@@ -7,7 +7,7 @@ my $logger = Fluent::Logger->new(
     tag_prefix => 'td.test_db',
 );
  
-$debug = 2;
+$debug = 3;
 
 $time = time;
 print "Time: $time\n" if $debug;
@@ -16,20 +16,17 @@ print "Time: $time\n" if $debug;
 
 my $il = get_aviationweather("kpwk"); # Palwaukee Airport
 my $il_temp = current_temp($il);
-#print "IL: $il_temp\n" if ($debug > 2);  
 
 my $ca = get_aviationweather("KNUQ"); # Moffett Field
 my $ca_temp = current_temp($ca);
-#print "CA: $ca_temp\n" if ($debug > 2);  
 
 my $jp = get_aviationweather("RJAA"); # Narita Intl
 my $jp_temp = current_temp($jp);
-#print "JP: $ca_temp\n" if $debug;  
 
 # Prepare and send the weather data
 
-$temp_json = "{\"KPWK\":\"$il_temp\",\"KNUQ\":\"$ca_temp\",\"RJAA\":\"$jp_temp\"} ";
-print "$time\n$temp_json\n" if ($debug > 1);
+my $temp_json = "{\"KPWK\":\"$il_temp\",\"KNUQ\":\"$ca_temp\",\"RJAA\":\"$jp_temp\"\}";
+print "$time : $temp_json\n" if ($debug);
 $logger->post("temperature_table", { "time" => "$time", "v" => $temp_json });
 
 
@@ -52,13 +49,11 @@ sub get_aviationweather {
   }
 }
 
+
 sub current_temp {
   # Parse out the temperature string from the conditions page.
   local $_ = shift;
-  #Example:
-  # (14&deg;F)
-#  /temp_now:\s\'([0-9.]+)\s/ || die "No temp data?";
-#  /temp_now:\s\'([0-9.]+)\s/;
+  # Example html from aviationweather.gov:   (14&deg;F)
    /\(([0-9.-]+)\&deg\;F\)/ || return "na";
   return $1;
 }
